@@ -1,0 +1,76 @@
+##
+## PIN tools
+##
+
+default: CMPsim64
+
+##############################################################
+#
+# Here are some things you might want to configure
+#
+##############################################################
+
+EXT=
+
+TARGET_COMPILER?=gnu
+
+##############################################################
+#
+# Common Flags
+#
+##############################################################
+GZSTREAM ?= 1
+MYLIBS   ?=
+COMMON_FLAGS ?= $(CMDLINE) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DCRC_KIT=1
+
+##############################################################
+#
+# Compiler Specific Flags
+#
+##############################################################
+
+
+ifeq ($(TARGET_COMPILER),gnu)
+	include ${PIN_DIR}/source/tools/makefile.gnu.config
+
+    LINKER?=${CXX}
+    DBG?= -g
+    OPT=-O3 -fomit-frame-pointer -funroll-all-loops -ffast-math -fno-exceptions
+    CXXFLAGS = $(COMMON_FLAGS) -Wall -Werror -Wno-unknown-pragmas -Wno-unused-result -std=c++11 $(OPT) $(DBG)
+    EEXT = $(EXT)
+endif
+
+##############################################################
+#
+# Tools Sources
+#
+##############################################################
+
+LLC_OBJS = ./src/LLCsim/crc_cache.o \
+        ./src/LLCsim/replacement_state.o
+
+INCLUDES = -Isrc/LLCsim
+
+cacheobjs: $(LLC_OBJS)
+
+##############################################################
+#
+# build rules
+#
+##############################################################
+
+TOOLS = bin/CMPsim$(EEXT)
+
+%.o : %.cpp
+	$(CXX) -c $(CXXFLAGS) $(PIN_CXXFLAGS) $(INCLUDES) ${OUTOPT}$@ $<
+
+
+CMPsim32:  clean cacheobjs 
+	$(LINKER) -Wl,-u,main $(PIN_SALDFLAGS) $(LINK_DEBUG) ${LINK_OUT}bin/CMPsim.usetrace.32 ./bin/libCMPsim.32.a $(LLC_OBJS) ${PIN_LPATHS} $(SAPIN_LIBS) /usr/lib/libz.a 
+
+CMPsim64:  clean cacheobjs 
+	$(LINKER) -Wl,-u,main $(PIN_SALDFLAGS) $(LINK_DEBUG) ${LINK_OUT}bin/CMPsim.usetrace.64 ./bin/libCMPsim.64.a $(LLC_OBJS) ${PIN_LPATHS} $(SAPIN_LIBS) /usr/lib/x86_64-linux-gnu/libz.a 
+
+## cleaning
+clean:
+	-rm -f *.o $(TOOLS) *.out *.tested *.failed $(LLC_OBJS) 
