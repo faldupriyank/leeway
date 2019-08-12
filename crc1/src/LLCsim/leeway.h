@@ -302,6 +302,7 @@ class LDPT {
             assert(0);
         }
         LDPT_ENTRY* entry = FindEntry(sig, inst); 
+        assert(current_ld <= max_ld);
         assert(entry->stable_ld <= max_ld);
         if ( entry->stable_ld == current_ld ) {
             entry->variance_conf = 0;
