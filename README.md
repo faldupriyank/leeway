@@ -1,5 +1,5 @@
-# leeway
-Source code for the replacement policy published in [Faldu et al., PACT'17] and [Faldu et al., CRC2'17].
+# Leeway: Addressing Variability in Dead-Block Prediction for Last-Level Caches
+Source code for the replacement policy published in [Faldu et al., PACT'17] and [Faldu et al., CRC2'17]. Instructions are found here: https://github.com/faldupriyank/leeway/wiki.
 
 **Please cite the following if you use Leeway in your evaluation.**
 
