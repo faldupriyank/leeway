@@ -113,6 +113,9 @@ int32_t stat_threshold = 0;
 uint32_t bypass_th[MAX_POLICY_TYPES] = {0};
 uint64_t interval = 200000000;
 
+#ifdef STATIC_POLICIES
+const int static_policies[MAXIMUM_CORES] = {0, 0, 0, 0}; // 0-->ROP_POLICY 1-->BOP_POLICY
+#endif
 
 struct SetType {
     uint8_t owner;
@@ -699,6 +702,10 @@ uint64_t get_sig(uint64_t PC, uint32_t cpu, uint32_t type) {
     if ( type == PREFETCH ) {
         return PREFETCH_SIG;
     }
+
+#ifdef NO_PC
+    return 0x100+cpu;
+#endif
 
     uint64_t sig = PC % total_sig_entries;
     sig = (cpu << sig_bits_without_core) | sig;
